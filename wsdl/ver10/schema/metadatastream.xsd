@@ -19,6 +19,27 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<!--===============================-->
 	<!--       Scene Description       -->
 	<!--===============================-->
+	<xs:complexType name="ConsolidatedAppearance">
+		<xs:sequence>
+			<xs:element name="Color" type="tt:ColorDescriptor" minOccurs="0"/>
+			<xs:element name="Class" type="tt:ClassDescriptor" minOccurs="0"/>
+			<xs:element name="Extension" type="tt:ConsolidatedAppearanceExtension" minOccurs="0"/>
+			<xs:element name="VehicleInfo" type="tt:VehicleInfo" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="LicensePlateInfo" type="tt:LicensePlateInfo" minOccurs="0"/>
+			<xs:element name="HumanFace" type="fc:HumanFace" minOccurs="0"/> 
+			<xs:element name="HumanBody" type="bd:HumanBody" minOccurs="0"/> 
+			<xs:element name="ImageRef" type="xs:anyURI" minOccurs="0"/>
+			<xs:element name="Image" type="xs:base64Binary" minOccurs="0"/>
+			<xs:element name="BarcodeInfo" type="tt:BarcodeInfo" minOccurs="0"/>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+		</xs:sequence>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="ConsolidatedAppearanceExtension">
+		<xs:sequence>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="Appearance">
 		<xs:sequence>
 			<xs:element name="Transformation" type="tt:Transformation" minOccurs="0"/>
@@ -262,6 +283,61 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ObjectExtension">
+		<xs:sequence>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ConsolidatedObject">
+		<xs:complexContent>
+			<xs:extension base="tt:ObjectId">
+				<xs:sequence>
+					<xs:element name="StartTime" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>The time first observation of the object was made, sould be considtent with the UtcTime of the Frame in which the object first apprared</xs:documentation>
+						</xs:annotation>
+				    </xs:element>
+					<xs:element name="EndTime" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The time the last observation of an object was made, sould be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
+						</xs:annotation>
+				    </xs:element>
+					<xs:element name="Duration" type="xs:duration">
+						<xs:annotation>
+							<xs:documentation>The duration the object has been in the view when the "consolidation" is made. Note thet the duration is not always EndTIme - StartTime. Of the "consolidation" is made befor the object had been deleted the duration will be set to the diffreance between the "conolidation" time and the StartTime. </xs:documentation>
+							<!--TODO: It feels like the Duration filed is kind of hard to explain and possibly easy to misinterpret. Should this be represented in some other way? -->
+						</xs:annotation>
+				    </xs:element>
+					<xs:element name="ConsolidatedAppearance" type="tt:ConsolidatedAppearance" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The "consolidated" apprarance of the object.</xs:documentation>
+							<!--TODO: It is unclear with this actualy represents, is it the avrage appearance over all observations or is it the appearance at some specific time
+							For example:
+								- How would someone changing the color of thirs shirt be represented, should both shirt colors be include or only the last shirt color
+							    - How sould the fact that a person had a bag in some observations but not in all be represented? -->
+						</xs:annotation>
+				    </xs:element>
+					<!--TODO: Should there also ce a consoidated behaviour type? In that case waht does it represent? e.g.
+					<xs:element name="ConsolidatedBehaviour" type="tt:ConsolidatedAppearance" minOccurs="0"/>-->
+					<xs:element name="Observations" type="tt:Frame" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>Frames in which the obejct has been observed. You are only allowed to add objects to the frame that correspond to the ObjectId of the ColsolidatedObject here.</xs:documentation>
+							<!--TODO: It is possible to add info that is not relevent in the context of a consolidated object to a frame, should this be a custom type instead?
+							          What we need is a list of Objects and UtcTimes that correspond to the UtcTime of the frame that the object appeared in. -->
+						</xs:annotation>
+				    </xs:element>
+					<xs:element name="Extension" type="tt:ObjectExtension" minOccurs="0"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+				</xs:sequence>
+				<xs:attribute name="Parent" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>Object ID of the parent object. eg: License plate object has Vehicle object as parent.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:anyAttribute processContents="lax"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ConsolidatedObservationExtension">
 		<xs:sequence>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
 		</xs:sequence>
