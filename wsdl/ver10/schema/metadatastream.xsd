@@ -519,6 +519,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<xs:complexType name="VideoAnalyticsStream">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="Frame" type="tt:Frame"/>
+			<xs:element name="ConsolidatedObject" type="tt:ConsolidatedObject"/>
 			<xs:element name="Extension" type="tt:VideoAnalyticsStreamExtension"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:choice>
