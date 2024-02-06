@@ -2402,8 +2402,8 @@
         </section>
       </section>
       <section>
-        <title>Consolidated object representation</title>
-          <para>TODO: We will probably need to add a description about the "consolidated" object representation somewhere around here.</para>
+        <title>Object Track representation</title>
+          <para>TODO: We will probably need to add a description about the object track representation somewhere around here.</para>
       </section>  
     <section  xml:id="mqtt">
       <title>JSON over MQTT</title>
