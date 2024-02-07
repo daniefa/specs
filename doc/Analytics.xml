@@ -7434,6 +7434,34 @@ xmlns:acme="http://www.acme.com/schema"&gt;
       </variablelist>
     </section>
   </appendix>
+  <appendix>
+    <title>Consoilidated Object</title>
+    <para>Overview of consolidated object</para>
+    <section>
+      <title>Consolidated Object Analytics Module</title>
+      <para>Calling the GetAnalyticsModuleOptions operation with the ttr:ConsolidatedObjectModule type shall return a ttr:ConsolidatedObjectModuleConfigOptions, the consolidated module supported by the Device.</para>
+      <programlisting><![CDATA[<tt:AnalyticsModuleDescription Name="ttr:ConsolidatedObject">
+<tt:Parameters>
+  <tt:ElementItemDescription Name="ConsolidatedObject" Type="ttr:ConsolidatedObjectModuleConfigOptions"/>
+</tt:Parameters>
+<tt:MessageDescription>
+  <tt:Source>
+    <tt:SimpleItemDescription Name="VideoSourceToken" Type="tt:ReferenceToken"/>
+    <tt:SimpleItemDescription Name="VideoAnalyticsConfigurationToken" Type="tt:ReferenceToken"/>
+    <tt:SimpleItemDescription Name="AnalyticsModuleName" Type="xs:string"/>
+  </tt:Source>
+  <tt:Data>
+    <tt:ElementItemDescription Name="ConsolidatedObject" Type="tt:ConsolidatedObject"/>
+  </tt:Data>
+  <tt:ParentTopic>
+    tns1:VideoAnalytics/Consolidated/Object
+  </tt:ParentTopic>
+</tt:MessageDescription>
+</tt:AnalyticsModuleDescription>
+]]></programlisting>
+      <para>The above analytics module description defines that a ConsolidatedObject instance produces Consolidated Object Events (when a Object is deleted? (TODO: Maybe this should be more general and configurable)), attached to the topic <emphasis role="bold">tns1:</emphasis><emphasis role="bold">VideoAnalytics/ConsolidatedObject</emphasis>. These <emphasis role="bold">Consolidated Events</emphasis> shall contain a data paylod of type "tt:ConsolidatedObject"  (See metadatastream.xsd).</para>
+    </section>
+  </appendix>
   <appendix role="revhistory">
     <title>Revision History</title>
     <para />
