@@ -280,6 +280,11 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 							<xs:documentation>The time the last observation of an object was made, sould be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
+					<xs:element name="ConsolidatedState" type="tt:ConsolidatedState" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The consolidated state will contain information of interest regarding a object track in a more compact way than what you would get by looking at all the observations of a object track. The consolidated state also enables the producers to send information about a object that is not bound to a single observation, and instead spans the entire object track.</xs:documentation>
+						</xs:annotation>
+				    </xs:element>
 					<xs:element name="Observations" type="tt:Observation" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:documentation>State information at times the object has been observed. You are only allowed to add objects to the frame that correspond to the ObjectId of the tracked onbject here.</xs:documentation>
@@ -288,6 +293,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 					<xs:element name="Extension" type="tt:ObjectTrackExtension" minOccurs="0"/>
 					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 				</xs:sequence>
+				<xs:attribute name="UtcTime" type="xs:dateTime" use="required"/>
 				<xs:anyAttribute processContents="lax"/>
 			</xs:extension>
 		</xs:complexContent>
@@ -420,7 +426,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<xs:element name="Extension" type="tt:ConsolidatedStateExtension" minOccurs="0"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:sequence>
-		<xs:attribute name="UtcTime" type="xs:dateTime" use="required"/>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="ConsolidatedStateExtension">
