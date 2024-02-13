@@ -280,12 +280,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 							<xs:documentation>The time the last observation of an object was made, sould be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
-					<xs:element name="Duration" type="xs:duration">
-						<xs:annotation>
-							<xs:documentation>The duration of the object track. Note thet the duration is not always EndTIme - StartTime. If the track is made befor the object had been deleted the duration will be set to the diffreance between the current track time and the StartTime. </xs:documentation>
-							<!--TODO: It feels like the Duration filed is kind of hard to explain and possibly easy to misinterpret. Should this be represented in some other way? -->
-						</xs:annotation>
-				    </xs:element>
 					<xs:element name="Observations" type="tt:Observation" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:documentation>State information at times the object has been observed. You are only allowed to add objects to the frame that correspond to the ObjectId of the tracked onbject here.</xs:documentation>
@@ -416,6 +410,20 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="ObjectTreeExtension">
+		<xs:sequence>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ConsolidatedState">
+		<xs:sequence>
+			<xs:element name="Object" type="tt:Object" minOccurs="0"/>
+			<xs:element name="Extension" type="tt:ConsolidatedStateExtension" minOccurs="0"/>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+		</xs:sequence>
+		<xs:attribute name="UtcTime" type="xs:dateTime" use="required"/>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="ConsolidatedStateExtension">
 		<xs:sequence>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
 		</xs:sequence>
