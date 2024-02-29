@@ -272,22 +272,23 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 				<xs:sequence>
 					<xs:element name="StartTime" type="xs:dateTime">
 						<xs:annotation>
-							<xs:documentation>The time first observation of the object was made, sould be considtent with the UtcTime of the Frame in which the object first apprared</xs:documentation>
+							<xs:documentation>The time first observation of the object was made, should be consistent with the UtcTime of the Frame in which the object first appeared.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
 					<xs:element name="EndTime" type="xs:dateTime" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>The time the last observation of an object was made, sould be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
+							<xs:documentation>The time the last observation of an object was made, should be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
 					<xs:element name="ConsolidatedObservations" type="tt:ConsolidatedObservation" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
-							<xs:documentation>The consolidated observation is a consolidation/aggregation of several observations of a object track over a window/part of the track. Attributes of the observation state sould be considered as constant over the window/part of the track.</xs:documentation>
+							<xs:documentation>Consolidation/aggregation of several observations of an object over a window/part of the track. 
+								Attributes of the consolidated observation should be considered constant during the consolidation time window.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
 					<xs:element name="Observations" type="tt:Observation" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
-							<xs:documentation>State information at times the object has been observed. You are only allowed to add objects to the frame that correspond to the ObjectId of the tracked onbject here.</xs:documentation>
+							<xs:documentation>Includes observations of an object tracked across an entire track duration.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
 					<xs:element name="Extension" type="tt:ObjectTrackExtension" minOccurs="0"/>
@@ -339,7 +340,11 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	</xs:complexType>
 	<xs:complexType name="Observation">
 		<xs:sequence>
-			<xs:element name="State" type="tt:Object"/>
+			<xs:element name="State" type="tt:Object">
+				<xs:annotation>
+					<xs:documentation> Observed state of an object during the tracking time window.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="Extension" type="tt:ObservationExtension" minOccurs="0"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:sequence>
@@ -422,23 +427,32 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	</xs:complexType>
 	<xs:complexType name="ConsolidatedObservation">
 		<xs:sequence>
-			<xs:element name="State" type="tt:Object"/>
+			<xs:element name="State" type="tt:Object">
+				<xs:annotation>
+					<xs:documentation>
+						Consolidation/aggregated state of several observations of an object during a time window of the track. 
+						Attributes of the consolidated observation should be considered constant during the consolidation time window.
+						When WindowStartTime and WindowEndTime are NOT set, window span is considered as from track start to track end.
+						Device should NOT set only one of WindowStartTime or WindowEndTime.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="WindowStartTime" type="xs:dateTime" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>The start time for the window/part of the track that the consolidation/aggregation concerns. Not setting WindowStartTime/End implies the entire from track start to track end is part of the window.</xs:documentation>
+					<xs:documentation>Start time of the time window for which track consolidation/aggregation is applied. </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="WindowEndTime" type="xs:dateTime" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>The end time for the window/part of the track that the consolidation/aggregation concerns. Not setting WindowStartTime/End implies that the entire from track start to track end is part of the window.</xs:documentation>
+					<xs:documentation>End time of the time window for which track consolidation/aggregation is applied.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Extension" type="tt:ConsolidatedStateExtension" minOccurs="0"/>
+			<xs:element name="Extension" type="tt:ConsolidatedObservationExtension" minOccurs="0"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:sequence>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
-	<xs:complexType name="ConsolidatedStateExtension">
+	<xs:complexType name="ConsolidatedObservationExtension">
 		<xs:sequence>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
 		</xs:sequence>
@@ -517,7 +531,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<xs:complexType name="VideoAnalyticsStream">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="Frame" type="tt:Frame"/>
-			<xs:element name="ObjectTrack" type="tt:ObjectTrack"/>
 			<xs:element name="Extension" type="tt:VideoAnalyticsStreamExtension"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:choice>
