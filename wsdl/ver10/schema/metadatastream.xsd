@@ -266,6 +266,42 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="Window">
+		<xs:sequence>
+			<xs:element name="StartTime" type="xs:dateTime" use="required"/>
+			<xs:element name="EndTime" type="xs:dateTime" use="required"/>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+		</xs:sequence>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="Observation">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="Window" type="tt:Window"/>
+				<xs:element name="UtcTime" type="xs:dateTime"/>
+				<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+			</xs:choice>
+			<xs:element name="State" type="tt:Object" minOccurs="0"/>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+		</xs:sequence>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="AttributeTrack">
+		<xs:sequence>
+			<xs:element name="AttributeOfInterest" type="tt:AttributeOfInterest" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specify the property that will be updated by providing its path. If excluded all properties should be considered.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Observations" type="tt:Observation" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The state of the attribute of interes during a time point or window.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
+		</xs:sequence>
+		<xs:anyAttribute processContents="lax"/>
+	</xs:complexType>
 	<xs:complexType name="ObjectTrack">
 		<xs:complexContent>
 			<xs:extension base="tt:ObjectId">
@@ -280,29 +316,16 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 							<xs:documentation>The time the last observation of an object was made, should be consistent with when the object was explicilty or implicitly deleted.</xs:documentation>
 						</xs:annotation>
 				    </xs:element>
-					<xs:element name="ConsolidatedObservations" type="tt:ConsolidatedObservation" minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="AttributeTrack" type="tt:AttributeTrack" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
-							<xs:documentation>Consolidation/aggregation of several observations of an object over a window/part of the track. 
-								Attributes of the consolidated observation should be considered constant during the consolidation time window.</xs:documentation>
+							<xs:documentation>Each AttributeTrack contains all relevante information about the attribute of interest for the object track.</xs:documentation>
 						</xs:annotation>
-				    </xs:element>
-					<xs:element name="Observations" type="tt:Observation" minOccurs="0" maxOccurs="unbounded">
-						<xs:annotation>
-							<xs:documentation>Includes observations of an object tracked across an entire track duration.</xs:documentation>
-						</xs:annotation>
-				    </xs:element>
-					<xs:element name="Extension" type="tt:ObjectTrackExtension" minOccurs="0"/>
+					</xs:element>
 					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 				</xs:sequence>
-				<xs:attribute name="UtcTime" type="xs:dateTime" use="required"/>
 				<xs:anyAttribute processContents="lax"/>
 			</xs:extension>
 		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="ObjectTrackExtension">
-		<xs:sequence>
-			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
-		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="Frame">
 		<xs:sequence>
@@ -336,24 +359,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<xs:complexType name="FrameExtension2">
 		<xs:sequence>
 			<xs:any namespace="##targetNamespace" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="Observation">
-		<xs:sequence>
-			<xs:element name="State" type="tt:Object">
-				<xs:annotation>
-					<xs:documentation> Observed state of an object during the tracking time window.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Extension" type="tt:ObservationExtension" minOccurs="0"/>
-			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
-		</xs:sequence>
-		<xs:attribute name="UtcTime" type="xs:dateTime" use="required"/>
-		<xs:anyAttribute processContents="lax"/>
-	</xs:complexType>
-	<xs:complexType name="ObservationExtension">
-		<xs:sequence>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="Merge">
@@ -421,38 +426,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="ObjectTreeExtension">
-		<xs:sequence>
-			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="ConsolidatedObservation">
-		<xs:sequence>
-			<xs:element name="State" type="tt:Object">
-				<xs:annotation>
-					<xs:documentation>
-						Consolidation/aggregated state of several observations of an object during a time window of the track. 
-						Attributes of the consolidated observation should be considered constant during the consolidation time window.
-						When WindowStartTime and WindowEndTime are NOT set, window span is considered as from track start to track end.
-						Device should NOT set only one of WindowStartTime or WindowEndTime.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="WindowStartTime" type="xs:dateTime" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Start time of the time window for which track consolidation/aggregation is applied. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="WindowEndTime" type="xs:dateTime" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>End time of the time window for which track consolidation/aggregation is applied.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="Extension" type="tt:ConsolidatedObservationExtension" minOccurs="0"/>
-			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
-		</xs:sequence>
-		<xs:anyAttribute processContents="lax"/>
-	</xs:complexType>
-	<xs:complexType name="ConsolidatedObservationExtension">
 		<xs:sequence>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- first Vendor then ONVIF -->
 		</xs:sequence>
