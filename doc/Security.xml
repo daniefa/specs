@@ -1096,6 +1096,11 @@
       <para>OAuth 2.0 is a specification that describes how to issue access tokens. It is defined in RFC6749. OpenID Connect has been developed as an extension of OAuth 2.0.</para>
       <para>OAuth 2.0 includes the definition of a web API called "authorization endpoint". Requests to this API must include a parameter called <emphasis>response_type</emphasis> which can be either <emphasis>code</emphasis> or <emphasis>token</emphasis>. OpenID Connect extends the OAuth 2.0 specification, by adding the values <emphasis>id_token</emphasis> and <emphasis>none</emphasis> for <emphasis>response_type</emphasis> and allowing any combination of <emphasis>code</emphasis>, <emphasis>token</emphasis> and <emphasis>id_token</emphasis>.</para>
       <para>Any request for ID tokens must include <emphasis>openid</emphasis> in the <emphasis>scope</emphasis> request parameter.</para>
+      <para>For example OAuth 2.0 client registration, as specified by RFC6749 requires
+        configuration of ClientId, ClientSecret, an authentication method according to <xref
+          xmlns:xlink="http://www.w3.org/1999/xlink" linkend="table_smg_rzq_swb"/>plus server
+        dependent supplemental parameters before the client can use the OAuth2.0 and OpenID Connect
+        flow.</para>
       <section xml:id="section_acl_4zq_swb">
         <title>User authentication and authorization</title>
         <para>Users can retrieve JWTs from an OpenID Connect server by authenticating and authorizing access to resources by following the OAuth2 Authorization Code Flow.</para>
@@ -1108,7 +1113,7 @@
             </imageobject>
           </mediaobject>
         </figure>
-        <para>A device can be setup to use JWTs obtained with this flow to allow access to its internal web interface for externally authenticated users. In that case an authorization server configuration with type OAuthAuthorizationCode should be created.</para>
+        <para>A device can be setup to use JWTs obtained with this flow to allow access to its internal web interface for externally authenticated users. In that case an authorization server configuration with type OAuthAuthorizationCode or OIDC2AuthorizationCode should be created.</para>
         <para>Access to the camera can be granted to users bearing either an ID Token or an Access Token, as long as the claims specified in <xref linkend="_Ref395181339"/> are present.</para>
       </section>
       <section xml:id="section_bcl_4zq_swb">
@@ -1284,8 +1289,8 @@
                   <para>client_secret_jwt</para>
                 </entry>
                 <entry>
-                  <para>Use a HMAC signed JWT using client_secret as shared secret, see OpenID
-                    Connect Core</para>
+                  <para>Use a HMAC signed JWT using client_secret as shared secret during client
+                    registration, see OpenID Connect Core</para>
                 </entry>
               </row>
               <row>
@@ -1293,7 +1298,8 @@
                   <para>private_key_jwt</para>
                 </entry>
                 <entry>
-                  <para>Use PKI signed JWT using private key, see OpenID Connect Core</para>
+                  <para>Use PKI signed JWT using private key, see OpenID Connect Core, public key
+                    shared with authorization server during client registration</para>
                 </entry>
               </row>
               <row>
@@ -1301,7 +1307,9 @@
                   <para>tls_client_auth</para>
                 </entry>
                 <entry>
-                  <para>Use PKI certificate to authenticate, see RFC 8705</para>
+                  <para>Use PKI certificate to authenticate, public key shared with authorization
+                    server during client registration and X.509 certificate used to setup mTLS with
+                    authorization server, see RFC 8705</para>
                 </entry>
               </row>
               <row>
@@ -1309,7 +1317,9 @@
                   <para>self_signed_tls_client_auth</para>
                 </entry>
                 <entry>
-                  <para>Use self-signed certificate to authenticate, see RFC 8705</para>
+                  <para>Use self-signed certificate to authenticate, public key shared with
+                    authorization server during client registration and self signed certificate used
+                    to setup mTLS with authorization server,see RFC 8705</para>
                 </entry>
               </row>
             </tbody>
@@ -4754,7 +4764,13 @@
         <para>Faults and their types shall not disclose sensitive information to an attacker that he could not obtain otherwise.</para>
       </listitem>
       <listitem>
-        <para>For interoperability reasons, sha1WithRSAEncryption as specified in RFC 3279 is mandated as default signature algorithm. However, since the security of the SHA-1 algorithm is under question, this specification mandates that a signature algorithm based on SHA-256, particularly sha256WithRSAEncryption as specified in RFC 4055, be supported in addition.</para>
+        <para>Secure up to date signature algorithm should be implemented by devices and clients.
+          Devices signal the supported algorithm via their capabilities and clients should select
+          the algorithm with highest security strength supported by both parties. As common baseline
+          this specification requires device side support for SHA-2, particularly
+          sha256WithRSAEncryption as specified in RFC 4055. Note that for backward compatibility of
+          some usages this specification currently mandates device side support for
+          sha1WithRSAEncryption as specified in RFC 3279. </para>
       </listitem>
       <listitem>
         <para>Operations with arguments that need protection against eavesdropping or manipulation shall only be executed over sufficiently protected communication channels. </para>
@@ -4817,9 +4833,9 @@
       <para>All other configuration of the TLS server on a device is outside the scope of this specification revision and may be addressed by later revisions of this document.</para>
     </section>
   </chapter>
-  <appendix xml:id="_Ref460769599">
-    <title>JWT over SCTP example</title>
-    <para>The JWT will have the following content</para>
+  <appendix xml:id= "q5l_q5m_51c">
+    <title>JWT Content example</title>
+    <para>Here is an example of JWT components to be encoded into a JWT Token</para>
     <programlisting><![CDATA[{
     "typ":"JWT",
     "alg":"ES256",
@@ -4840,7 +4856,11 @@ RJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</programlisting>
 piMjBpTENKdVltWWlPakUyTnpBME9ESTRNREFzSW1WNGNDSTZNVFkzTURVM01qZ3dNQ3dpWVhWa0lqb2lkR0Z5
 WjJWMExtRjFaR2xsYm1ObElpd2ljbTlzWlhNaU9pSnZiblpwWmpwUGNHVnlZWFJ2Y2lKOS5TZmxLeHdSSlNNZU
 tLRjJRVDRmd3BNZUpmMzZQT2s2eUpWX2FkUXNzdzVj</programlisting>
-    <para>At this point, the JWT can be used in the WS-Security header of the SOAP request:</para>
+  </appendix>
+  <appendix xml:id="_Ref460769599">
+    <title>JWT over SCTP example</title>
+    <para>JWT, whose content example is shown in <xref xmlns:xlink="http://www.w3.org/1999/xlink"
+        linkend="q5l_q5m_51c"/>, can be used in the WS-Security header of the SOAP request:</para>
     <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
               xmlns:enc="http://www.w3.org/2003/05/soap-encoding"
@@ -4866,7 +4886,7 @@ pTTWVLS0YyUVQ0ZndwTWVKZjM2UE9rNnlKVl9hZFFzc3c1Yw==
   <env:Body>
 </env:Envelope>]]></programlisting>
   </appendix>
-  <appendix>
+  <appendix xml:id= "hq4_s5m_51c">
     <title>JWT over HTTPS example</title>
     <para>The following exchange between client and device over HTTPS demonstrates a device supporting MD5 and SHA-256 for digest authentication as well as JWT-based client authentication.</para>
     <para>Unauthenticated request from the client:</para>
@@ -4889,7 +4909,9 @@ nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228"
 WWW-Authenticate: Digest algorithm=SHA-256, realm="Silvan_http_digest", qop="auth",
 nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228"
 X-Frame-Options: SAMEORIGIN]]></programlisting>
-    <para>Authenticated request from the client, by using JWT-based client authentication</para>
+    <para>Authenticated request from the client, by using JWT-based client authentication whose JWT
+      content looks like the example is shown in <xref xmlns:xlink="http://www.w3.org/1999/xlink"
+        linkend="q5l_q5m_51c"/></para>
     <programlisting><![CDATA[POST /onvif/device_service HTTP/1.1
 Host: 10.XX.XX.XX
 Authorization: Bearer ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOaUo5LmV5SnBjM01pT2lK
@@ -4915,8 +4937,8 @@ WWW-Authenticate: Digest algorithm=SHA-256, realm="Silvan_http_digest", qop="aut
 nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228"
 X-Frame-Options: SAMEORIGIN]]></programlisting>
   </appendix>
-  <appendix role="revhistory">
-    <title>JWT over RTSPS</title>
+  <appendix xml:id= "b14_55m_51c">
+    <title>JWT over RTSPS example</title>
     <para>The following exchange between client and device over RTSPS demonstrates a device supporting MD5 and SHA-256 for digest authentication as well as JWT-based client authentication.</para>
     <para>Unauthenticated request from the client:</para>
     <programlisting><![CDATA[DESCRIBE rtsp://10.XX.XX.XX/stream RTSP/1.0
@@ -4931,7 +4953,9 @@ WWW-Authenticate: Digest algorithm=MD5, realm="Silvan_rtsp_digest", qop="auth",
 nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228"
 WWW-Authenticate: Digest algorithm=SHA-256, realm="Silvan_rtsp_digest", qop="auth",
 nonce="62d82aa9ca59e3a04cd1", opaque="5b6ea228"]]></programlisting>
-    <para>Authenticated request from the client, by using JWT-based client authentication</para>
+    <para>Authenticated request from the client, by using JWT-based client authentication whose JWT
+      content looks like the example is shown in <xref xmlns:xlink="http://www.w3.org/1999/xlink"
+        linkend="q5l_q5m_51c"/></para>
     <programlisting><![CDATA[DESCRIBE rtsp://10.XX.XX.XX/stream RTSP/1.0
 Authorization: Bearer ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOaUo5LmV5SnBjM01pT2lK
 elpYSjJaWEl1Y0dGMGFDNWpiMjBpTENKdVltWWlPakUyTnpBME9ESTRNREFzSW1WNGNDSTZNVFkzTURVM01qZ3
