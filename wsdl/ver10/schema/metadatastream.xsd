@@ -275,10 +275,17 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	</xs:complexType>
 	<xs:complexType name="Observation">
 		<xs:sequence>
-			<xs:element name="Window" type="tt:Window"/>
+			<xs:element name="Window" type="tt:Window" minOccurs="0"/>
 			<xs:element name="State" type="tt:Object" minOccurs="0"/>
 			<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
 		</xs:sequence>
+		<xs:attribute name="Aggregation" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>
+					The marker set on aggregated observation, default is false.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:anyAttribute processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="AttributeTrack">
