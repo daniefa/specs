@@ -320,7 +320,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 					</xs:element>
 					<xs:element name="Aggregation" type="tt:Object" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Aggregation of object description collected across all Attribute tracks.</xs:documentation>
+							<xs:documentation>Aggregation of object description collected across all Property tracks.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	<!-- reserved for ONVIF -->
